@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Signup | TaskFlow</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-900 flex justify-center items-center h-screen">
+
+  <div class="bg-gray-800 p-8 rounded-2xl shadow-xl w-96">
+    <h2 class="text-3xl font-bold text-center mb-6 text-white">Create Account</h2>
+
+    <input id="name" class="w-full mb-3 p-3 rounded bg-gray-700 text-white" placeholder="Full Name" />
+    <input id="email" class="w-full mb-3 p-3 rounded bg-gray-700 text-white" placeholder="Email" />
+    <input id="password" type="password" class="w-full mb-5 p-3 rounded bg-gray-700 text-white" placeholder="Password" />
+
+    <button onclick="signup()" class="w-full bg-green-600 hover:bg-green-700 p-3 rounded text-white font-semibold">
+      Signup
+    </button>
+
+    <p class="text-gray-400 text-center mt-4">
+      Already have an account? <a href="login.html" class="text-blue-400 underline">Login</a>
+    </p>
+
+    <button onclick="history.back()" class="mt-4 w-full bg-gray-600 p-2 rounded">⬅ Back</button>
+
+  </div>
+
+  <script>
+    async function signup() {
+      const name = document.getElementById("name").value;
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+
+      const res = await fetch("http://localhost:5000/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, password })
+      });
+
+      const data = await res.json();
+      alert(data.message);
+
+      if (data.message === "Signup successful") {
+        window.location.href = "login.html";
+      }
+    }
+  </script>
+
+</body>
+</html>

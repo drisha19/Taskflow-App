@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Your Tasks | TaskFlow</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-900 text-white min-h-screen p-10">
+
+  <h1 class="text-4xl font-bold mb-6 text-center">📋 Your Tasks</h1>
+
+  <button onclick="window.location.href='index.html'" class="mb-6 bg-gray-600 px-4 py-2 rounded">
+    ⬅ Back
+  </button>
+
+  <ul id="taskList" class="space-y-4"></ul>
+
+  <!-- ===========================
+       🔥 EDIT TASK MODAL
+  ============================ -->
+  <div id="editModal" class="hidden fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center">
+    <div class="bg-gray-800 p-6 rounded-xl w-96">
+      <h2 class="text-2xl font-bold mb-4">✏️ Edit Task</h2>
+
+      <input id="editTitle" type="text" placeholder="Task Title" 
+             class="w-full p-2 mb-3 bg-gray-700 rounded">
+
+      <textarea id="editDesc" placeholder="Description" rows="3"
+                class="w-full p-2 mb-3 bg-gray-700 rounded"></textarea>
+
+      <input id="editDate" type="date" 
+             class="w-full p-2 mb-4 bg-gray-700 rounded">
+
+      <div class="flex justify-between">
+        <button onclick="closeModal()" 
+                class="bg-gray-600 px-4 py-2 rounded">Cancel</button>
+
+        <button onclick="updateTask()" 
+                class="bg-blue-600 px-4 py-2 rounded">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+
+    // -----------------------------
+    // 🔄 Toggle Status
+    // -----------------------------
+    async function toggleStatus(id, currentStatus) {
+      const token = localStorage.getItem("token");
+
+      const newStatus = currentStatus === "pending" ? "completed" : "pending";
+
+      await fetch(`http://localhost:5000/tasks/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": token
+        },
+        body: JSON.stringify({ status: newStatus })
+      });
+
+      loadTasks();
+    }
+
+
+    let editTaskId = null;
+
+    // -----------------------------
+    // ❌ DELETE TASK
+    // -----------------------------
+    async function deleteTask(id) {
+      const token = localStorage.getItem("token");
+
+      const res = await fetch(`http://localhost:5000/tasks/${id}`, {
+        method: "DELETE",
+        headers: { "Authorization": token }
+      });
+
+      loadTasks();
+    }
+
+    // -----------------------------
+    // ✏️ OPEN EDIT MODAL
+    // -----------------------------
+    function openEditModal(task) {
+      editTaskId = task._id;
+
+      document.getElementById("editTitle").value = task.title;
+      document.getElementById("editDesc").value = task.description;
+      document.getElementById("editDate").value = task.dueDate || "";
+
+      document.getElementById("editModal").classList.remove("hidden");
+    }
+
+    // Close modal
+    function closeModal() {
+      document.getElementById("editModal").classList.add("hidden");
+    }
+
+    // -----------------------------
+    // 💾 UPDATE TASK
+    // -----------------------------
+    async function updateTask() {
+      const token = localStorage.getItem("token");
+
+      const updatedData = {
+        title: document.getElementById("editTitle").value,
+        description: document.getElementById("editDesc").value,
+        dueDate: document.getElementById("editDate").value
+      };
+
+      await fetch(`http://localhost:5000/tasks/${editTaskId}`, {
+        method: "PUT",
+        headers: { 
+          "Content-Type": "application/json",
+          "Authorization": token
+        },
+        body: JSON.stringify(updatedData)
+      });
+
+      closeModal();
+      loadTasks();
+    }
+
+    // -----------------------------
+    // 📌 LOAD TASKS
+    // -----------------------------
+    async function loadTasks() {
+      const token = localStorage.getItem("token");
+
+      const res = await fetch("http://localhost:5000/tasks", {
+        headers: { "Authorization": token }
+      });
+
+      const tasks = await res.json();
+      const list = document.getElementById("taskList");
+
+      list.innerHTML = "";
+
+      tasks.forEach(t => {
+        const li = document.createElement("li");
+        li.className = "bg-gray-800 p-4 rounded-xl flex justify-between items-start";
+
+        li.innerHTML = `
+          <div>
+            <h3 class="text-xl font-bold">${t.title}</h3>
+            <p>${t.description}</p>
+            <p class="text-sm text-gray-400 mt-1">Due: ${t.dueDate || "No Date"}</p>
+
+            <span class="mt-2 inline-block px-3 py-1 rounded-full text-sm 
+              ${t.status === "completed" ? "bg-green-600" : "bg-yellow-500"}">
+              ${t.status.toUpperCase()}
+            </span>
+          </div>
+
+          <div class="space-y-2 flex flex-col">
+            
+            <button 
+              onclick="toggleStatus('${t._id}', '${t.status}')"
+              class="bg-purple-600 px-3 py-1 rounded-lg">
+              🔄 Mark ${t.status === "pending" ? "Completed" : "Pending"}
+            </button>
+
+            <button 
+              onclick='openEditModal(${JSON.stringify(t)})'
+              class="bg-yellow-500 px-3 py-1 rounded-lg">
+              ✏️ Edit
+            </button>
+
+            <button 
+              onclick="deleteTask('${t._id}')"
+              class="bg-red-600 px-3 py-1 rounded-lg">
+              ❌ Delete
+            </button>
+
+          </div>
+        `;
+
+        list.appendChild(li);
+      });
+    }
+
+    loadTasks();
+  </script>
+
+</body>
+</html>

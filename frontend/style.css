@@ -1,0 +1,97 @@
+:root{
+  --bg:#f3f4f6; --card:#ffffff; --accent:#2563eb; --muted:#6b7280;
+  --shadow: 0 6px 18px rgba(15,23,42,0.06);
+  font-family: Inter, system-ui, Arial, sans-serif;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:var(--bg);
+  color:#111827;
+}
+.topbar{
+  background:linear-gradient(90deg,#111827,#1f2937);
+  color:white;
+  padding:18px 16px;
+  text-align:center;
+}
+.container{
+  max-width:960px;
+  margin:22px auto;
+  padding:0 16px;
+  display:grid;
+  gap:18px;
+  grid-template-columns: 1fr;
+}
+@media(min-width:800px){
+  .container{ grid-template-columns: 1fr 1fr; }
+}
+
+.card{
+  background:var(--card);
+  padding:16px;
+  border-radius:12px;
+  box-shadow:var(--shadow);
+}
+
+input[type="text"], textarea, input[type="date"], select{
+  width:100%;
+  padding:10px 12px;
+  margin-bottom:10px;
+  border:1px solid #e5e7eb;
+  border-radius:8px;
+  font-size:14px;
+  background:white;
+}
+
+textarea{ min-height:80px; resize:vertical }
+
+.row{ display:flex; gap:8px; align-items:center }
+.row > *{ flex:1 }
+
+.btn{
+  display:inline-block;
+  padding:10px 14px;
+  border-radius:8px;
+  background:var(--accent);
+  color:white;
+  border:none;
+  cursor:pointer;
+  font-weight:600;
+}
+
+.tasks-list{ display:flex; flex-direction:column; gap:10px; margin-top:8px }
+
+.task{
+  padding:10px;
+  border-radius:10px;
+  border:1px solid #e6edf7;
+  background:linear-gradient(180deg, #ffffff, #fbfcff);
+  display:flex;
+  justify-content:space-between;
+  gap:8px;
+  align-items:flex-start;
+}
+
+.task .left{ flex:1 }
+.task h3{ margin:0 0 6px 0; font-size:16px }
+.meta{ font-size:12px; color:var(--muted) }
+
+.status{
+  padding:6px 8px;
+  border-radius:8px;
+  font-size:12px;
+  min-width:92px;
+  text-align:center;
+  font-weight:600;
+}
+.status.pending{ background:#fffbeb; color:#92400e; border:1px solid #fef3c7 }
+.status.in-progress{ background:#eef2ff; color:#3730a3; border:1px solid #e0e7ff }
+.status.completed{ background:#ecfdf5; color:#065f46; border:1px solid #bbf7d0 }
+
+.task-actions{ display:flex; flex-direction:column; gap:8px; min-width:120px }
+.small-btn{ padding:6px 8px; border-radius:8px; border:none; cursor:pointer; font-size:13px }
+.edit{ background:#f3f4f6 }
+.del{ background:#fee2e2; color:#7f1d1d }
+
+.foot{ text-align:center; margin:18px 0 28px; color:var(--muted) }

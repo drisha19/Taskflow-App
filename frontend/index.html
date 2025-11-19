@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TaskFlow - Home</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-900 text-white min-h-screen flex flex-col items-center py-10">
+
+  <h1 class="text-4xl font-bold mb-6">🚀 TaskFlow — Add Tasks</h1>
+
+  <button onclick="logout()" class="absolute top-5 right-5 bg-red-600 px-4 py-2 rounded">Logout</button>
+
+  <div class="bg-gray-800 p-6 rounded-xl w-96 mb-6">
+    <h2 class="text-xl font-semibold mb-3">Create a Task</h2>
+
+    <input id="title" placeholder="Task title" class="w-full mb-2 p-2 rounded bg-gray-700 text-white" />
+    <input id="description" placeholder="Description" class="w-full mb-2 p-2 rounded bg-gray-700 text-white" />
+    <input id="dueDate" type="date" class="w-full mb-4 p-2 rounded bg-gray-700 text-white" />
+
+    <button onclick="addTask()" class="w-full bg-blue-600 hover:bg-blue-700 p-2 rounded">Add Task</button>
+  </div>
+
+  <button onclick="window.location.href='viewTasks.html'" class="bg-green-600 p-3 rounded-lg">
+    View Tasks ➜
+  </button>
+
+  <script>
+    async function addTask() {
+      const token = localStorage.getItem("token");
+
+      const title = document.getElementById("title").value;
+      const description = document.getElementById("description").value;
+      const dueDate = document.getElementById("dueDate").value;
+
+      const res = await fetch("http://localhost:5000/tasks", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": token
+        },
+        body: JSON.stringify({ title, description, dueDate })
+      });
+
+      const data = await res.json();
+      alert("Task Added!");
+    }
+
+    function logout() {
+      localStorage.removeItem("token");
+      window.location.href = "login.html";
+    }
+  </script>
+</body>
+</html>
